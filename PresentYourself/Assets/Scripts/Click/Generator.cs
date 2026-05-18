@@ -1,24 +1,17 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Generator : MonoBehaviour, IInteractable
+public class Generator : InteractableBase
 {
-    public bool hasInteracted { get; private set; }
-    public InteractableStates interactableState { get; private set; }
+    [SerializeField] private GameObject lights;
+    [SerializeField] private Animation agent1Animation;
     
-    private void Start()
+    protected override void HandleClick(PointerEventData eventData)
     {
-        hasInteracted = false;
-        interactableState = InteractableStates.Closed;
-    }
-    
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if(hasInteracted)
+        if (hasInteracted)
             return;
         
-        gameObject.transform.localScale *= 1.1f;
-        hasInteracted = true;
-        interactableState = InteractableStates.Opened;
+        agent1Animation.Play();
+        lights.gameObject.SetActive(false);
     }
 }
