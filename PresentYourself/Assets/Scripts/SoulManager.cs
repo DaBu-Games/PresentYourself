@@ -7,6 +7,7 @@ using UnityEngine.Serialization;
 
 public class SoulManager : MonoBehaviour
 {
+    [SerializeField] private AudioClip clip;
     [SerializeField] private float transitionDuration = 1f;
     [SerializeField] private float interactRange = 3f;
     [SerializeField] private InteractableBase startInteractable;
@@ -43,6 +44,7 @@ public class SoulManager : MonoBehaviour
         
         var interactable = obj.GetComponent<InteractableBase>();
         
+        GameEvents.OnSoundEffectsWithVolume.Invoke(clip, 0.4f);
         yield return MoveToTarget(obj);
         
         interactable.SetState(HighlightState.Selected);
