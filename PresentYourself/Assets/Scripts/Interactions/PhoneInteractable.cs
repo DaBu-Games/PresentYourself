@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class PhoneInteractable : InteractableBase
 {
-    [SerializeField] private Transform agent2Phone;
     [SerializeField] private Animation phoneAnimation;
+    [SerializeField] private Animation agent2Animation;
+    [SerializeField] private GameObject oldPhone;
     
     public override IEnumerator HandleInteraction()
     {
@@ -13,6 +14,8 @@ public class PhoneInteractable : InteractableBase
         
         phoneAnimation.Play();
         yield return new WaitForSeconds(phoneAnimation.clip.length);
-        agent2Phone.gameObject.SetActive(true);
+        agent2Animation.Play();
+        yield return new WaitForSeconds(agent2Animation.clip.length);
+        oldPhone.SetActive(true);
     }
 }

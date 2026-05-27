@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Serialization;
 
 public class SoulManager : MonoBehaviour
@@ -11,6 +12,7 @@ public class SoulManager : MonoBehaviour
     [SerializeField] private InteractableBase startInteractable;
 
     public static bool IsBusy {get; private set;}
+    public static bool InFocusMode;
     private bool _movementDone;
     private bool _interactionDone;
     
@@ -36,41 +38,27 @@ public class SoulManager : MonoBehaviour
     private IEnumerator HandleFullTransition(Transform obj)
     {
         IsBusy = true;
+                
         transform.SetParent(null);
-        
-        _movementDone = false;
-        _interactionDone = false;
         
         var interactable = obj.GetComponent<InteractableBase>();
         
-        StartCoroutine(RunInteraction(interactable));
-        
         yield return MoveToTarget(obj);
         
-        _movementDone = true;
+        interactable.SetState(HighlightState.Selected);
         
-        yield return new WaitUntil(() => _movementDone && _interactionDone);
+        if (interactable != null)
+            yield return interactable.HandleInteraction();
         
+        interactable.HasInteracted();
+
         UpdateInteractableTargets(interactable);
+        
         IsBusy = false;
-    }
-    
-    private IEnumerator RunInteraction(InteractableBase interactable)
-    {
-        if (interactable == null)
-        {
-            _interactionDone = true;
-            yield break;
-        }
-
-        yield return interactable.HandleInteraction();
-
-        _interactionDone = true;
     }
     
     private IEnumerator MoveToTarget(Transform obj)
     {
-        IsBusy = true;
         transform.SetParent(null);
 
         Vector3 startPosition = transform.position;

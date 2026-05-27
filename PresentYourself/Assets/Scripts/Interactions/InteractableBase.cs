@@ -34,6 +34,17 @@ public abstract class InteractableBase : MonoBehaviour, IPointerClickHandler, IP
     {
         All.Remove(this);
     }
+    
+    protected virtual void OnExitSelected(Transform newTransform)
+    {
+        if(newTransform == transform)
+            return;
+        
+        GameEvents.OnPointerClick -= OnExitSelected;
+        SetState(HighlightState.Selectable);
+    }
+    
+    public void HasInteracted() => hasInteracted = true;
 
     public void SetState(HighlightState state)
     {
@@ -51,7 +62,7 @@ public abstract class InteractableBase : MonoBehaviour, IPointerClickHandler, IP
     
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if(SoulManager.IsBusy)
+        if(SoulManager.IsBusy || SoulManager.InFocusMode)
             return;
         
         if(_state == HighlightState.Selectable)
@@ -68,12 +79,11 @@ public abstract class InteractableBase : MonoBehaviour, IPointerClickHandler, IP
     
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(_state != HighlightState.Highlighted || SoulManager.IsBusy)
+        if(_state != HighlightState.Highlighted || SoulManager.IsBusy || SoulManager.InFocusMode)
             return;
         
         GameEvents.OnPointerClick?.Invoke(transform);
-        SetState(HighlightState.Selected);
-        hasInteracted = true;
+        GameEvents.OnPointerClick += OnExitSelected;
     }
 
     public abstract IEnumerator HandleInteraction();
