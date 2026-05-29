@@ -17,8 +17,6 @@ Shader "Custom/SpriteClickableHighlight"
 
         Pass
         {
-            Name "SINGLE_PASS"
-
             Cull Off
             ZWrite Off
             ZTest LEqual
