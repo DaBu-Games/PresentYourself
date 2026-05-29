@@ -3,8 +3,6 @@ Shader "Custom/SpriteClickableHighlight"
     Properties
     {
         [MainTexture] _MainTex("Sprite Texture", 2D) = "white" {}
-        [HideInInspector] _Color("Sprite Color", Color) = (1,1,1,1)
-
         _HighlightColor("Highlight Color", Color) = (1,1,1,1)
     }
 
@@ -48,8 +46,7 @@ Shader "Custom/SpriteClickableHighlight"
             SAMPLER(sampler_MainTex);
 
             float4 _MainTex_ST;
-
-            float4 _Color;
+            
             float4 _HighlightColor;
 
             Varyings vert(Attributes IN)
@@ -62,7 +59,7 @@ Shader "Custom/SpriteClickableHighlight"
 
             half4 frag(Varyings IN) : SV_Target
             {
-                float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv) * _Color;
+                float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv);
                 col.rgb = lerp(col.rgb, _HighlightColor.rgb, _HighlightColor.a);
 
                 return col;
