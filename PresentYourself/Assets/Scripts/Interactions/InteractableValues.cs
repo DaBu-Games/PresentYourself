@@ -6,7 +6,7 @@ public class InteractableValues : ScriptableObject
 {
     [SerializeField] private List<HighlightEntry> highlightEntries;
 
-    private Dictionary<HighlightState, float> _map;
+    private Dictionary<HighlightState, Color> _map;
 
     private void OnEnable()
     {
@@ -15,7 +15,7 @@ public class InteractableValues : ScriptableObject
 
     private void BuildMap()
     {
-        _map = new Dictionary<HighlightState, float>();
+        _map = new Dictionary<HighlightState, Color>();
 
         foreach (var entry in highlightEntries)
         {
@@ -23,11 +23,11 @@ public class InteractableValues : ScriptableObject
         }
     }
 
-    public float Get(HighlightState state)
+    public Color Get(HighlightState state)
     {
         if (_map == null)
             BuildMap();
 
-        return _map.GetValueOrDefault(state, 0f);
+        return _map.GetValueOrDefault(state, new Color(1, 1, 1, 0));
     }
 }

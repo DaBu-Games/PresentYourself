@@ -9,7 +9,7 @@ public abstract class InteractableBase : MonoBehaviour, IPointerClickHandler, IP
 {
     [SerializeField] private InteractableValues values;
     private HighlightState _state = HighlightState.None;
-    private static readonly int HighlightStrength = Shader.PropertyToID("_HighlightStrength");
+    private static readonly int HighlightColor = Shader.PropertyToID("_HighlightColor");
     public static readonly List<InteractableBase> All = new();
     
     protected bool hasInteracted = false;
@@ -53,10 +53,10 @@ public abstract class InteractableBase : MonoBehaviour, IPointerClickHandler, IP
         SetHighlight(values.Get(state));
     }
 
-    private void SetHighlight(float value)
+    private void SetHighlight(Color value)
     {
         _sr.GetPropertyBlock(_mpb);
-        _mpb.SetFloat(HighlightStrength, value);
+        _mpb.SetColor(HighlightColor, value);
         _sr.SetPropertyBlock(_mpb);
     }
     

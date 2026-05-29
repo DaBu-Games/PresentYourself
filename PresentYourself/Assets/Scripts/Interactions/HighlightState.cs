@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public enum HighlightState
 {
     None,
@@ -10,5 +12,5 @@ public enum HighlightState
 public struct HighlightEntry
 {
     public HighlightState state;
-    public float value;
+    public Color value;
 }
