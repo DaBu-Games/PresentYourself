@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class KlokManager : MonoBehaviour
+public class KlokManager : MonoBehaviour, IInteractable
 {
     [Header("Clock Hands")] 
     [SerializeField] private Transform moonHand;
@@ -82,12 +82,14 @@ public class KlokManager : MonoBehaviour
         _controllingSun = !_controllingSun;
     }
     
-    private void EnterInteraction()
+    public void EnterInteraction()
     {
         _changeAction.performed += OnChange;
+        GameEvents.CanInteract?.Invoke(false);
+        GameEvents.KlokInteraction?.Invoke(true);
     }
     
-    private void ExitInteraction()
+    public void ExitInteraction()
     {
         if (moonAnswer == _moonPosition && sunAnswer == _sunPosition)
         {
@@ -95,6 +97,17 @@ public class KlokManager : MonoBehaviour
         }
             
         _changeAction.performed -= OnChange;
+
+        if (_isInRange)
+        {
+            GameEvents.CanInteract?.Invoke(true);
+        }
+        else
+        {
+            GameEvents.CanInteract?.Invoke(false);
+        }
+        
+        GameEvents.KlokInteraction?.Invoke(false);
     }
 
     private void OnChange(InputAction.CallbackContext ctx)
