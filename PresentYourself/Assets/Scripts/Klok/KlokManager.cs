@@ -21,12 +21,15 @@ public class KlokManager : MonoBehaviour, IInteractable
     private InputAction _changeAction;
     private InputAction _switchAction;
     private InputAction _interactAction;
+    
+    public bool IsCompleted { get; private set; }
 
     private void Awake()
     {
         _changeAction = InputSystem.actions.FindAction("Change");
         _switchAction = InputSystem.actions.FindAction("Switch");
         _interactAction = InputSystem.actions.FindAction("Interact");
+        IsCompleted = false;
     }
 
     private void OnEnable()
@@ -41,14 +44,13 @@ public class KlokManager : MonoBehaviour, IInteractable
 
     private void OnDisable()
     {
+        _changeAction.performed -= OnChange;
         _switchAction.performed -= OnSwitch;
         _interactAction.performed -= OnInteract;
         
         _changeAction.Disable();
         _switchAction.Disable();
         _interactAction.Disable();
-
-        ExitInteraction();
     }
 
     public void SetRange(bool isInRange)
@@ -91,23 +93,22 @@ public class KlokManager : MonoBehaviour, IInteractable
     
     public void ExitInteraction()
     {
+        _changeAction.performed -= OnChange;
+        
+        GameEvents.KlokInteraction?.Invoke(false);
+        
         if (moonAnswer == _moonPosition && sunAnswer == _sunPosition)
         {
             Debug.Log("correct answer");
-        }
             
-        _changeAction.performed -= OnChange;
-
-        if (_isInRange)
-        {
-            GameEvents.CanInteract?.Invoke(true);
-        }
-        else
-        {
+            IsCompleted = true;
             GameEvents.CanInteract?.Invoke(false);
+            _interactAction.performed -= OnInteract;
+            
+            return;
         }
-        
-        GameEvents.KlokInteraction?.Invoke(false);
+
+        GameEvents.CanInteract?.Invoke(_isInRange);
     }
 
     private void OnChange(InputAction.CallbackContext ctx)

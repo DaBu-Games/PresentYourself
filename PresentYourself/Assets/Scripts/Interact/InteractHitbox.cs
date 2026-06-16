@@ -14,7 +14,7 @@ public class InteractHitbox : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !_interactable.IsCompleted)
         {
             _interactable.SetRange(true);
             GameEvents.CanInteract?.Invoke(true);
@@ -23,7 +23,7 @@ public class InteractHitbox : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !_interactable.IsCompleted)
         {
             _interactable.SetRange(false);
             GameEvents.CanInteract?.Invoke(false);
