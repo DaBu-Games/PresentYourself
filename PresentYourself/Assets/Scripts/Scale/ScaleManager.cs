@@ -19,11 +19,14 @@ public class ScaleManager : MonoBehaviour
     private float _currentRotation;
     private float _targetRotation;
 
+    public bool isCompleted { get; private set; }
+
     private readonly HashSet<ScaleWeight> _weightsOnScale = new();
     
     private void Start()
     {
         Recalculate();
+        isCompleted = false;
     }
     
     private void Awake()
@@ -88,7 +91,7 @@ public class ScaleManager : MonoBehaviour
 
         if (_currentWeight == scaleAnswer)
         {
-            Debug.Log("correct weight");
+            isCompleted = true;
         }
     }
 }

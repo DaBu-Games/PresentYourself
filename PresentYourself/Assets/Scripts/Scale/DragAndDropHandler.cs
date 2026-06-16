@@ -1,18 +1,22 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class DragAndDropHandler : MonoBehaviour
 {
     [SerializeField] private ScaleManager scaleManager;
     [SerializeField] private Camera cam;
-    [SerializeField] private LayerMask draggableLayer;
+    [SerializeField] private LayerMask raycastLayer;
+    [SerializeField] private float maxInteractDistance = 3f;
 
     private ScaleWeight _heldObject;
     private float _distance;
 
     private InputAction _clickAction;
     private bool _isHolding;
+    
+    private IClickable _currentHover;
 
     private void Awake()
     {
@@ -23,12 +27,14 @@ public class DragAndDropHandler : MonoBehaviour
     {
         _clickAction.Enable();
 
+        _clickAction.started += HandleClick;
         _clickAction.started += OnPress;
         _clickAction.canceled += OnRelease;
     }
 
     private void OnDisable()
     {
+        _clickAction.started -= HandleClick;
         _clickAction.started -= OnPress;
         _clickAction.canceled -= OnRelease;
 
@@ -37,12 +43,61 @@ public class DragAndDropHandler : MonoBehaviour
 
     private void Update()
     {
+        HandleHover();
+        
         if (_isHolding && _heldObject)
             Drag();
+    }
+    
+    private bool IsInRange(RaycastHit hit)
+    {
+        return Vector3.Distance(cam.transform.position, hit.collider.transform.position)
+               <= maxInteractDistance;
+    }
+
+    private void HandleHover()
+    {
+        Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+        IClickable hover = null;
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 100f, raycastLayer))
+        {
+            if (IsInRange(hit))
+            {
+                hit.collider.TryGetComponent(out hover);
+            }
+        }
+
+        if (hover == _currentHover)
+            return;
+
+        _currentHover = hover;
+
+        GameEvents.CanClick?.Invoke(_currentHover != null);
+    }
+
+    private void HandleClick(InputAction.CallbackContext ctx)
+    {
+        Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 100f, raycastLayer))
+        {
+            if (!IsInRange(hit))
+                return;
+            
+            if (hit.collider.TryGetComponent(out IClickable clickable))
+            {
+                clickable.OnClick();
+            }
+        }
     }
 
     private void OnPress(InputAction.CallbackContext ctx)
     {
+        if(scaleManager.isCompleted)
+            return;
+        
         TryPickup();
 
         if (_heldObject)
@@ -51,6 +106,9 @@ public class DragAndDropHandler : MonoBehaviour
 
     private void OnRelease(InputAction.CallbackContext ctx)
     {
+        if(scaleManager.isCompleted)
+            return;
+        
         Drop();
         _isHolding = false;
     }
@@ -59,8 +117,11 @@ public class DragAndDropHandler : MonoBehaviour
     {
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 100f, draggableLayer))
+        if (Physics.Raycast(ray, out RaycastHit hit, 100f, raycastLayer))
         {
+            if (!IsInRange(hit))
+                return;
+            
             if (hit.collider.TryGetComponent(out ScaleWeight weight))
             {
                 _heldObject = weight;
