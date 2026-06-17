@@ -12,6 +12,8 @@ public class CameraLook : MonoBehaviour
     private void Awake()
     {
         _lookAction = InputSystem.actions.FindAction("Look");
+
+        GameEvents.EndCredits += OnDisable;
     }
 
     private void OnEnable()
@@ -24,6 +26,7 @@ public class CameraLook : MonoBehaviour
     private void OnDisable()
     {
         _lookAction?.Disable();
+        GameEvents.EndCredits -= OnDisable;
     }
 
     private void Update()

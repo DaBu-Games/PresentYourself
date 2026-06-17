@@ -23,14 +23,13 @@ public class GameManager : MonoBehaviour
     {
         _completedPuzzles += 1;
         GameEvents.OnSoundEffectsPuzzle.Invoke(true);
+        GameEvents.OnColorTransition.Invoke(true);
 
         if (_completedPuzzles >= totalPuzzles)
         {
             GameEvents.EndCredits.Invoke();
-        }
-        else
-        {
-            GameEvents.OnColorTransition.Invoke(true);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
     }
 

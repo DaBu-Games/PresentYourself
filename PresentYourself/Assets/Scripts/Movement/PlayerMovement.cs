@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _moveAction = InputSystem.actions.FindAction("Move");
         _sprintAction = InputSystem.actions.FindAction("Sprint");
+        GameEvents.EndCredits += OnDisable;
     }
 
     private void OnEnable()
@@ -26,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _moveAction?.Disable();
         _sprintAction?.Disable();
+        GameEvents.EndCredits -= OnDisable;
     }
 
     private void Update()
