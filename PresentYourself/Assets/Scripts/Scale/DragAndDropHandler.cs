@@ -95,7 +95,7 @@ public class DragAndDropHandler : MonoBehaviour
 
     private void OnPress(InputAction.CallbackContext ctx)
     {
-        if(scaleManager.isCompleted)
+        if(scaleManager.IsCompleted)
             return;
         
         TryPickup();
@@ -106,7 +106,7 @@ public class DragAndDropHandler : MonoBehaviour
 
     private void OnRelease(InputAction.CallbackContext ctx)
     {
-        if(scaleManager.isCompleted)
+        if(scaleManager.IsCompleted)
             return;
         
         Drop();

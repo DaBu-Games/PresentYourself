@@ -7,6 +7,8 @@ public class CalenderManager : MonoBehaviour
     [SerializeField] private List<CalenderWheel> wheels = new List<CalenderWheel>();
     [SerializeField] private CalenderButton calenderButton;
 
+    private bool _isCompleted;
+
     private void Awake()
     {
         calenderButton.Initialize(CheckAnswer);
@@ -14,11 +16,22 @@ public class CalenderManager : MonoBehaviour
 
     private void CheckAnswer()
     {
-        Debug.Log("check answer");
+        if (_isCompleted)
+            return;
         
         if (wheels.TrueForAll(w => w.IsCorrect))
         {
-            Debug.Log("Correct");
+            foreach (CalenderWheel wheel in wheels)
+            {
+                wheel.IsCompleted();
+            }
+            
+            _isCompleted = true;
+            GameEvents.CompletedPuzzle.Invoke();
+        }
+        else
+        {
+            GameEvents.FalseAnswer.Invoke();
         }
     }
 }

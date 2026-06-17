@@ -13,17 +13,25 @@ public class CalenderWheel : MonoBehaviour
     [Header("Calender buttons")]
     [SerializeField] private CalenderButton minusButton;
     [SerializeField] private CalenderButton plusButton;
+    
+    private bool _isCompleted = false;
 
     private void Awake()
     {
         minusButton.Initialize(() =>
         {
+            if(_isCompleted)
+                return;
+            
             index = (index - 1 + items.Count) % items.Count;
             UpdateCalenderText();
         });
 
         plusButton.Initialize(() =>
         {
+            if (_isCompleted)
+                return;
+            
             index = (index + 1) % items.Count;
             UpdateCalenderText();
         });
@@ -37,4 +45,6 @@ public class CalenderWheel : MonoBehaviour
     }
     
     public bool IsCorrect => index == correctIndex;
+    
+    public void IsCompleted() => _isCompleted = true;
 }

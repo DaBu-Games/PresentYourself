@@ -99,13 +99,17 @@ public class KlokManager : MonoBehaviour, IInteractable
         
         if (moonAnswer == _moonPosition && sunAnswer == _sunPosition)
         {
-            Debug.Log("correct answer");
+            GameEvents.CompletedPuzzle.Invoke();
             
             IsCompleted = true;
             GameEvents.CanInteract?.Invoke(false);
             _interactAction.performed -= OnInteract;
             
             return;
+        }
+        else
+        {
+            GameEvents.FalseAnswer.Invoke();
         }
 
         GameEvents.CanInteract?.Invoke(_isInRange);
