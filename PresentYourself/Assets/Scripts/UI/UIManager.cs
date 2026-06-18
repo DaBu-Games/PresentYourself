@@ -1,23 +1,37 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private GameObject klokUI;
     [SerializeField] private GameObject interactUI;
     [SerializeField] private GameObject clickUI;
-    [SerializeField] private GameObject creditsUI;
+    [SerializeField] private GameObject pauseUI;
+    [SerializeField] private Animation endCredits;
+    
+    private InputAction _pauseAction;
+
+    public void PauseEvent(bool paused)
+    {
+        GameEvents.PauseUI.Invoke(paused);
+    }
 
     private void Start()
     {
         klokUI.SetActive(false);
         interactUI.SetActive(false);
         clickUI.SetActive(false);
-        creditsUI.SetActive(false);
+        pauseUI.SetActive(false);
         GameEvents.CanInteract += InteractUI;
         GameEvents.KlokInteraction += KlokInteraction;
         GameEvents.CanClick += ClickUI;
-        GameEvents.EndCredits += CreditsUI;
+        GameEvents.PauseUI += PauseUI;
+        GameEvents.EndCredits += CreditsAnimation;
+        
+        _pauseAction = InputSystem.actions.FindAction("Pause");
+        _pauseAction.Enable();
+        _pauseAction.performed += ctx => PauseEvent(true);
     }
 
     private void OnDisable()
@@ -25,7 +39,8 @@ public class UIManager : MonoBehaviour
         GameEvents.CanInteract -= InteractUI;
         GameEvents.KlokInteraction -= KlokInteraction;
         GameEvents.CanClick -= ClickUI;
-        GameEvents.EndCredits -= CreditsUI;
+        GameEvents.PauseUI -= PauseUI;
+        GameEvents.EndCredits -= CreditsAnimation;
     }
 
     private void InteractUI(bool canInteract)
@@ -43,8 +58,13 @@ public class UIManager : MonoBehaviour
         clickUI.SetActive(canClick);
     }
 
-    private void CreditsUI()
+    private void CreditsAnimation()
     {
-        creditsUI.SetActive(true);
+        endCredits.Play();
+    }
+
+    private void PauseUI(bool paused)
+    {
+        pauseUI.SetActive(paused);
     }
 }

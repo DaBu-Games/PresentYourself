@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,6 +15,12 @@ public class CameraLook : MonoBehaviour
         _lookAction = InputSystem.actions.FindAction("Look");
 
         GameEvents.EndCredits += OnDisable;
+        GameEvents.PauseUI += OnPause;
+    }
+
+    private void OnPause(bool paused)
+    {
+        if (paused) OnDisable(); else OnEnable();
     }
 
     private void OnEnable()
@@ -26,7 +33,14 @@ public class CameraLook : MonoBehaviour
     private void OnDisable()
     {
         _lookAction?.Disable();
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    private void OnDestroy()
+    {
         GameEvents.EndCredits -= OnDisable;
+        GameEvents.PauseUI -= OnPause;
     }
 
     private void Update()

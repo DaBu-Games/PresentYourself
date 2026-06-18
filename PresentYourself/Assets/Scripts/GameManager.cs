@@ -28,8 +28,6 @@ public class GameManager : MonoBehaviour
         if (_completedPuzzles >= totalPuzzles)
         {
             GameEvents.EndCredits.Invoke();
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
         }
     }
 

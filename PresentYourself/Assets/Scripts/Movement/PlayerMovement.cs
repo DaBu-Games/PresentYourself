@@ -15,7 +15,14 @@ public class PlayerMovement : MonoBehaviour
         _moveAction = InputSystem.actions.FindAction("Move");
         _sprintAction = InputSystem.actions.FindAction("Sprint");
         GameEvents.EndCredits += OnDisable;
+        GameEvents.PauseUI += OnPause;
     }
+    
+    private void OnPause(bool paused)
+    {
+        if (paused) OnDisable(); else OnEnable();
+    }
+
 
     private void OnEnable()
     {
@@ -27,7 +34,12 @@ public class PlayerMovement : MonoBehaviour
     {
         _moveAction?.Disable();
         _sprintAction?.Disable();
+    }
+
+    private void OnDestroy()
+    {
         GameEvents.EndCredits -= OnDisable;
+        GameEvents.PauseUI -= OnPause;
     }
 
     private void Update()

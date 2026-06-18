@@ -6,6 +6,7 @@ public static class GameEvents
     public static Action<bool> CanInteract;
     public static Action<bool> CanClick;
     public static Action<bool> KlokInteraction;
+    public static Action<bool> PauseUI;
     
     public static Action CompletedPuzzle;
     public static Action FalseAnswer;
